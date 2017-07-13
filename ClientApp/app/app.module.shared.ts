@@ -5,6 +5,7 @@ import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { FetchDataComponent } from './components/fetchdata/fetchdata.component';
 import { rootRoutingModule } from './app.routes';
+import { FetchDataService } from './components/fetchdata/fetchdata.service';
 
 export const sharedConfig: NgModule = {
     bootstrap: [AppComponent],
@@ -16,5 +17,8 @@ export const sharedConfig: NgModule = {
     ],
     imports: [
         rootRoutingModule
+    ], 
+    providers: [
+        FetchDataService
     ]
 };

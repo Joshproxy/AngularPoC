@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-import { Router, ActivatedRoute, RouterModule } from '@angular/router';
-import { HelloComponent } from '../../hello/hello.component';
-import { MultiplierComponent } from '../../multiplier/multiplier.component';
+import { Router, ActivatedRoute } from '@angular/router';
 
 
 @Component({
