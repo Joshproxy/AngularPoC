@@ -1,9 +1,11 @@
 ﻿import { Injectable } from '@angular/core';
-import { InjectionToken, Inject } from '@angular/core';
+import { Inject } from '@angular/core';
 import { Http, Response } from '@angular/http';
 
 import { Observable } from 'rxjs/Observable';
-import { Observer } from 'rxjs/Observer';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/from';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
@@ -21,21 +23,21 @@ export class FetchDataService {
         // if it were the first component pre-compiled on the server.
         this.fetchUrl = originUrl + '/api/SampleData/WeatherForecasts';
     }
-
-    fetchDataObservable = (): Observable<IWeatherForecast[]> => {
-        if (this.cache.length > 0) {
-            return Observable.create((obs: Observer<IWeatherForecast[]>) => {
-                obs.next(this.cache);
-            });
+    
+    fetchDataObservable = (useCache: boolean = false): Observable<IWeatherForecast[]> => {
+        if (useCache && this.cache.length > 0) {
+            return Observable.of(this.cache);
+            //return Observable.from(this.cache);
+        } else {
+            return this.http
+                .get(this.fetchUrl)
+                .map(this.extractData)
+                .catch(this.handleError);
         }
-        return this.http
-            .get(this.fetchUrl)
-            .map(this.extractData)
-            .catch(this.handleError);
     }
 
-    fetchDataPromise = (): Promise<IWeatherForecast[]> => {
-        if (this.cache.length > 0) {
+    fetchDataPromise = (useCache: boolean = false): Promise<IWeatherForecast[]> => {
+        if (useCache && this.cache.length > 0) {
             return Promise.resolve(this.cache);
         }
         return this.http

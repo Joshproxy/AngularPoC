@@ -1,28 +1,49 @@
 import { Component } from '@angular/core';
 import { FetchDataService, IWeatherForecast } from './fetchdata.service';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/share';
 
 @Component({
     selector: 'fetchdata',
     template: require('./fetchdata.component.html')
 })
 export class FetchDataComponent {
-    public forecasts: IWeatherForecast[] = [];
+    // Promise params
+    public forecastsPromise: IWeatherForecast[] = [];
+    public forecastsPromiseAsnyc: Promise<IWeatherForecast[]> = new Promise(() => []);
 
+    // Observable params
+    public forecastsObservable: IWeatherForecast[] = [];
+    public forecastsObservableAsnyc: Observable<IWeatherForecast[]>;
+    
     constructor(private dataService: FetchDataService) {
-        this.loadDataViaPromise();
+        this.loadDataViaObservable(true);
     }
 
-    loadDataViaPromise = () => {
-        this.dataService.fetchDataPromise()
+    loadDataViaPromise = (useCache: boolean = false) => {
+
+        // Async promise
+        this.forecastsPromiseAsnyc = this.dataService.fetchDataPromise(useCache);
+
+        // Promise
+        this.dataService.fetchDataPromise(useCache)
             .then((data: IWeatherForecast[]) => {
-                this.forecasts = data;
+                this.forecastsPromise = data;
             });
+
+        // Async Observable
+        this.forecastsObservableAsnyc = this.dataService.fetchDataObservable(useCache);
+
+        // Observable
+        this.dataService.fetchDataObservable(useCache)
+            .subscribe((data: IWeatherForecast[]) => {
+                this.forecastsObservable = data;
+            });
+
     };
 
-    loadDataViaObservable = () => {
-        this.dataService.fetchDataObservable()
-            .subscribe((data: IWeatherForecast[]) => {
-                this.forecasts = data;
-            });
+    loadDataViaObservable = (useCache: boolean = false) => {
+        this.loadDataViaPromise(useCache);
     };
 }
